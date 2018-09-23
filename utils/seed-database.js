@@ -10,10 +10,12 @@ const { notes } = require ('../db/seed/notes');
 
 mongoose.connect(MONGODB_URI, { useNewUrlParser:true })
   .then(() => mongoose.connection.db.dropDatabase())
-  .then(() => Folder.insertMany(folders))
-  .then(() => Note.insertMany(notes))
-  .then(results => {
-    console.info(`Inserted ${results.length} Notes`);
+  .then(() => {
+    return Promise.all([
+      Note.insertMany(notes),
+      Folder.insertMany(folders),
+      Folder.createIndexes(),
+    ]);
   })
   .then(() => mongoose.disconnect())
   .catch(err => {

@@ -1,16 +1,22 @@
 const folders = [
+
   {
+    '_id': '111111111111111111111100',
     'title': 'Archive'
   },
   {
-    'title': 'Personal'
-  },
-  {
+    '_id': '111111111111111111111101',
     'title': 'Drafts'
   },
   {
-    'title': 'Bakarayo'
+    '_id': '111111111111111111111102',
+    'title': 'Personal'
+  },
+  {
+    '_id': '111111111111111111111103',
+    'title': 'Work'
   }
+
 ];
 
 module.exports = { folders };

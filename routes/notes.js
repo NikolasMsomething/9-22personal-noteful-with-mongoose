@@ -41,7 +41,9 @@ router.get('/:id', (req, res, next) => {
   return Note.findById(id)
     .then((note) => {
       res.json(note);
-    }).catch(err => {
+    }).catch(error => {
+      const err = new Error('This ID wasnt found!');
+      err.status = 404;
       next(err);
     });
   
