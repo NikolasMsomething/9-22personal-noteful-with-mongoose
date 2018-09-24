@@ -1,7 +1,9 @@
-const express = require('express');
-const router = express.Router();
-const Folder = require('../models/folder');
-const mongoose = require('mongoose');
+const express = require('express'); //Require Express to create a router
+const router = express.Router(); //Creates a router
+const Folder = require('../models/folder'); //require the model/collection so we can access it once server spins up connection to DB
+const mongoose = require('mongoose'); //require mongoose so we can do validation checks on IDs... DONT connect to db server in routers EVER
+
+//ALWAYS REMEMBER 5 CRUD OPERATIONS
 
 //GET to /api/folders
 
@@ -13,6 +15,8 @@ router.get('/', (req, res, next) => {
       next(err);
     });
 });
+
+//GET to /api/folders/:id
 
 router.get('/:id', (req, res, next) => {
   const { id } = req.params;
@@ -33,6 +37,67 @@ router.get('/:id', (req, res, next) => {
     });
 });
 
+//POST to /api/folders/
+
+router.post('/', (req, res, next) => {
+
+  if(!('title' in req.body)) {
+    const err = new Error('You need a title!');
+    err.status = 404;
+    next(err);
+  }
+
+  return Folder.create(req.body)
+    .then((response) => {
+      res.status(201).json(response);
+    }).catch(err => {
+      next(err);
+    });
+});
+
+//PUT TO /api/folders/:id
+
+router.put('/:id', (req, res, next) => {
+  
+  const { id } = req.params;
+  
+
+  const newFolderName = {
+    title: `${req.body.title}`
+  };
+
+  if(!('title' in req.body)) {
+    const err = new Error('You need a title!');
+    err.status = 404;
+    next(err);
+  }
+
+  if(!(mongoose.Types.ObjectId.isValid(id))) {
+    const err = new Error('Not a valid id!');
+    err.status = 404;
+    next(err);
+  }
+
+  return Folder.findByIdAndUpdate(id, newFolderName, {new: true})
+    .then(response => {
+      res.status(201).json(response);
+    }).catch(err => {
+      next(err);
+    });
+
+  
+});
+
+router.delete('/:id', (req, res, next) => {
+  const { id } = req.params;
+
+  return Folder.findByIdAndRemove(id)
+    .then((response) => {
+      res.status(204).json(response);
+    }).catch(err => {
+      next(err);
+    });
+});
   
 
 module.exports = router;

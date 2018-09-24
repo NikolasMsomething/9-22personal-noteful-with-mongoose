@@ -2,6 +2,7 @@
 
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 const Note = require('../models/note');
 
 
@@ -38,6 +39,8 @@ router.get('/:id', (req, res, next) => {
 
   const { id } = req.params;
 
+
+
   return Note.findById(id)
     .then((note) => {
       res.json(note);
@@ -52,10 +55,25 @@ router.get('/:id', (req, res, next) => {
 /* ========== POST/CREATE AN ITEM ========== */
 router.post('/', (req, res, next) => {
 
+
+  const { id } = req.params;
+
   const newObj = {
     title: req.body.title,
     content: req.body.content
   };
+
+  if(!('title' in req.body)) {
+    const err = new Error('You need a title!');
+    err.status = 404;
+    next(err);
+  }
+
+  if(!(mongoose.Types.ObjectId.isValid(id))) {
+    const err = new Error('Not a valid id!');
+    err.status = 404;
+    next(err);
+  }
 
   return Note.create(newObj)
     .then(response => {
@@ -73,6 +91,12 @@ router.put('/:id', (req, res, next) => {
     title: req.body.title,
     content: req.body.content
   };
+
+  if(!('title' in req.body)) {
+    const err = new Error('You need a title!');
+    err.status = 404;
+    next(err);
+  }
 
   return Note.findByIdAndUpdate(req.params.id, updateValues, {new: true})
     .then(response => {
